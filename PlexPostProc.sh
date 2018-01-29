@@ -51,9 +51,8 @@ if [ ! -z "$1" ]; then
    # The above if selection statement checks if the file exists before proceeding. 
    
    FILENAME=$1 	# %FILE% - Filename of original file
-
    TEMPFILENAME="$(mktemp)"  # Temporary File for transcoding
-   
+   NEWFILENAME="${FILENAME%.ts}.mkv"   
    LOCKFILENAME="/tmp/PlexPostProcLock"
 
    # Uncomment if you want to adjust the bandwidth for this thread
@@ -73,12 +72,12 @@ if [ ! -z "$1" ]; then
    HandBrakeCLI -i "$FILENAME" -o "$TEMPFILENAME" --format mkv --encoder x264 --quality 20 --loose-anamorphic --decomb veryfast --x264-preset fast --h264-profile high --h264-level 4.1  || fatal "Handbrake has failed (Is it installed?)"
    
    echo "********************************************************"
-   echo "Cleanup / Copy $TEMPFILENAME to $FILENAME"
+   echo "Cleanup / Copy $TEMPFILENAME to $NEWFILENAME"
    echo "********************************************************"
 
    rm -f "$FILENAME"
-   mv -f "$TEMPFILENAME" "${FILENAME%.ts}.mkv"
-   chmod 775 "$FILENAME"
+   mv -f "$TEMPFILENAME" "$NEWFILENAME"
+   chmod 775 "$NEWFILENAME"
    
    # Let next conversion run.
    rm -f "$LOCKFILENAME"
