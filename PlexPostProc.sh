@@ -54,6 +54,7 @@ if [ ! -z "$1" ]; then
    TEMPFILENAME="$(mktemp)"  # Temporary File for transcoding
    NEWFILENAME="${FILENAME%.ts}.mkv"   
    LOCKFILENAME="/tmp/PlexPostProcLock"
+   HANDBRAKECLI="/usr/bin/HandBrakeCLI"
 
    # Uncomment if you want to adjust the bandwidth for this thread
    #MYPID=$$	# Process ID for current script
@@ -68,8 +69,8 @@ if [ ! -z "$1" ]; then
    echo "********************************************************"
    echo "Transcoding, Converting to H.264 w/Handbrake"
    echo "********************************************************"
-   #HandBrakeCLI -i "$FILENAME" -f mkv --aencoder copy -e qsv_h264 --x264-preset veryfast --x264-profile auto -q 16 --maxHeight 720 --decomb bob -o "$TEMPFILENAME" || fatal "Handbreak has failed (Is it installed?)"
-   HandBrakeCLI -i "$FILENAME" -o "$TEMPFILENAME" --format mkv --encoder x264 --quality 20 --loose-anamorphic --decomb veryfast --x264-preset fast --h264-profile high --h264-level 4.1  || fatal "Handbrake has failed (Is it installed?)"
+   #"$HANDBRAKECLI" -i "$FILENAME" -f mkv --aencoder copy -e qsv_h264 --x264-preset veryfast --x264-profile auto -q 16 --maxHeight 720 --decomb bob -o "$TEMPFILENAME" || fatal "Handbreak has failed (Is it installed?)"
+   "$HANDBRAKECLI" -i "$FILENAME" -o "$TEMPFILENAME" --format mkv --encoder x264 --quality 20 --loose-anamorphic --decomb veryfast --x264-preset fast --h264-profile high --h264-level 4.1  || fatal "Handbrake has failed (Is it installed?)"
    
    echo "********************************************************"
    echo "Cleanup / Copy $TEMPFILENAME to $NEWFILENAME"
