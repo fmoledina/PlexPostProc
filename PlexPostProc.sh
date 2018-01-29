@@ -77,7 +77,7 @@ if [ ! -z "$1" ]; then
 
    rm -f "$FILENAME"
    mv -f "$TEMPFILENAME" "$NEWFILENAME"
-   chmod 775 "$NEWFILENAME"
+   chmod 664 "$NEWFILENAME"
    
    # Let next conversion run.
    rm -f "$LOCKFILENAME"
