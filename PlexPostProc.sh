@@ -3,7 +3,7 @@
 #****************************************************************************** 
 #****************************************************************************** 
 #
-#            Plex DVR Post Processing w/Handbrake (H.264) Script
+#            Plex DVR Post Processing with transcode-video  Script
 #
 #****************************************************************************** 
 #****************************************************************************** 
@@ -11,7 +11,7 @@
 #  Version: 1.0
 #
 #  Pre-requisites: 
-#     HandBrakeCLI
+#     transcode-video
 #
 #
 #  Usage: 
@@ -23,12 +23,12 @@
 #      1. Creates a temporary directory in the home directory for 
 #      the show it is about to transcode.
 #
-#      2. Uses Handbrake (could be modified to use ffmpeg or other transcoder, 
-#      but I chose this out of simplicity) to transcode the original, very 
-#      large MPEG2 format file to a smaller, more manageable H.264 mp4 file 
-#      (which can be streamed to my Roku boxes).
+#      2. Uses Handbrake via transcode-video  (could be modified to use ffmpeg 
+#      or other transcoder, but I chose this out of simplicity) to transcode 
+#      the original, very  large MPEG2 format file to a smaller, more manageable
+#      H.264 mp4 file (which can be streamed to my Roku boxes).
 #
-#	   3. Copies the file back to the original filename for final processing
+#      3. Copies the file back to the original filename for final processing
 #
 #****************************************************************************** 
 
@@ -51,10 +51,11 @@ if [ ! -z "$1" ]; then
    # The above if selection statement checks if the file exists before proceeding. 
    
    FILENAME=$1 	# %FILE% - Filename of original file
-   TEMPFILENAME="$(mktemp)"  # Temporary File for transcoding
+   TEMPFILENAME="$(mktemp -p /media/plextemp/postproc).mkv"  # Temporary File for transcoding
    NEWFILENAME="${FILENAME%.ts}.mkv"   
    LOCKFILENAME="/tmp/PlexPostProcLock"
-   HANDBRAKECLI="/usr/bin/HandBrakeCLI"
+   #HANDBRAKECLI="/usr/bin/HandBrakeCLI"
+   TRANSCODEVIDEO="/usr/local/bin/transcode-video"
 
    # Uncomment if you want to adjust the bandwidth for this thread
    #MYPID=$$	# Process ID for current script
@@ -67,10 +68,12 @@ if [ ! -z "$1" ]; then
    touch "$LOCKFILENAME"
 
    echo "********************************************************"
-   echo "Transcoding, Converting to H.264 w/Handbrake"
+   #echo "Transcoding, Converting to H.264 w/Handbrake"
+   echo "Transcoding, Converting to H.264 with transcode-video"
    echo "********************************************************"
    #"$HANDBRAKECLI" -i "$FILENAME" -f mkv --aencoder copy -e qsv_h264 --x264-preset veryfast --x264-profile auto -q 16 --maxHeight 720 --decomb bob -o "$TEMPFILENAME" || fatal "Handbreak has failed (Is it installed?)"
-   "$HANDBRAKECLI" -i "$FILENAME" -o "$TEMPFILENAME" --format mkv --encoder x264 --quality 20 --loose-anamorphic --decomb veryfast --x264-preset fast --h264-profile high --h264-level 4.1  || fatal "Handbrake has failed (Is it installed?)"
+   #"$HANDBRAKECLI" -i "$FILENAME" -o "$TEMPFILENAME" --format mkv --encoder x264 --quality 20 --loose-anamorphic --decomb veryfast --x264-preset fast --h264-profile high --h264-level 4.1  || fatal "Handbrake has failed (Is it installed?)"
+   $TRANSCODEVIDEO --abr --target big --quick --prefer-ac3 "$FILENAME" -o "$TEMPFILENAME" || fatal "transcode-video has failed. Is it installed?"
    
    echo "********************************************************"
    echo "Cleanup / Copy $TEMPFILENAME to $NEWFILENAME"
