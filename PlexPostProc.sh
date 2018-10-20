@@ -66,6 +66,7 @@ if [ ! -z "$1" ]; then
    # Keeps CPU happy.
    while [ -f "$LOCKFILENAME" ]; do sleep 10; done;
    touch "$LOCKFILENAME"
+   trap "rm -f '$LOCKFILENAME'" EXIT
 
    echo "********************************************************"
    #echo "Transcoding, Converting to H.264 w/Handbrake"
@@ -84,7 +85,7 @@ if [ ! -z "$1" ]; then
    chmod 664 "$NEWFILENAME"
    
    # Let next conversion run.
-   rm -f "$LOCKFILENAME"
+   #rm -f "$LOCKFILENAME"
 
    echo "Done.  Congrats!"
 else
