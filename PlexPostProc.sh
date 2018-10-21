@@ -74,7 +74,7 @@ if [ ! -z "$1" ]; then
    echo "********************************************************"
    #"$HANDBRAKECLI" -i "$FILENAME" -f mkv --aencoder copy -e qsv_h264 --x264-preset veryfast --x264-profile auto -q 16 --maxHeight 720 --decomb bob -o "$TEMPFILENAME" || fatal "Handbreak has failed (Is it installed?)"
    #"$HANDBRAKECLI" -i "$FILENAME" -o "$TEMPFILENAME" --format mkv --encoder x264 --quality 20 --loose-anamorphic --decomb veryfast --x264-preset fast --h264-profile high --h264-level 4.1  || fatal "Handbrake has failed (Is it installed?)"
-   $TRANSCODEVIDEO --abr --target big --quick --prefer-ac3 "$FILENAME" -o "$TEMPFILENAME" || fatal "transcode-video has failed. Is it installed?"
+   $TRANSCODEVIDEO --abr --target big --quick --prefer-ac3 "$FILENAME" -o "$TEMPFILENAME" > >(tee /var/log/plexpostproc-out.log) 2> >(tee /var/log/plexpostproc-err.log >&2) || fatal "transcode-video has failed. Is it installed?"
    
    echo "********************************************************"
    echo "Cleanup / Copy $TEMPFILENAME to $NEWFILENAME"
